@@ -57,7 +57,7 @@ chrome.app.runtime.onLaunched.addListener(function () {
     // Calculate the bounds of all displays "full screen" and then create the frameless "app.html" window.
     var createAppWindowFullScreen = function () {
         // Callback to detect the Windows displays and resize the "app.html" window to go across all of them.
-        // @see: https://developer.chrome.com/apps/system_display#method-getInfo
+        // @see: https://developer.chrome.com/apps/system_display#method-getInfoy
         chrome.system.display.getInfo(function (displayInfo) {
             console.info("Displays: " + displayInfo.length);
 
@@ -98,17 +98,15 @@ chrome.app.runtime.onLaunched.addListener(function () {
             for (var i = 0; i < extendedDisplays.length; i++) {
                 var di = extendedDisplays[i];
                 appWidth += di.bounds.width;
-                appHeight = Math.min(appHeight, di.bounds.height);
+                appHeight += di.bounds.height;
             }
             console.info("Full Screen size:" +
                 "\n  Width:  " + appWidth + " pixels" +
                 "\n  Height: " + appHeight + " pixels");
-
             // Store the desktop info so we can pass that to "app.html".
             appInfo.displayCount = 1 + extendedDisplays.length;  // Number of displays we are using.
             appInfo.displayWidth = appWidth;  // App width.
             appInfo.displayHeight = appHeight;  // App height.
-
             // Create the frameless "app.html" window using full screen bounds.
             // @see: https://developer.chrome.com/apps/app_window
             var bounds = {"top": 0, "left": 0, "width": appWidth, "height": appHeight};
@@ -125,7 +123,7 @@ chrome.app.runtime.onLaunched.addListener(function () {
                 "visibleOnAllWorkspaces": true
             }, function (win) {
                 // Now the frameless window is created set the bounds.
-                win.setBounds(bounds);
+                win.outerBounds.setPosition(appWidth,appHeight);
                 console.log("Full screen app window created");
             });
         });
